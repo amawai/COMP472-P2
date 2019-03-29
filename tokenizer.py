@@ -10,7 +10,7 @@ def word_len_filter(word):
     pass
 
 # Tokenizes file, outputs array of valid words based on passed-in filter
-def filter(filename, filter_func=no_filter):
+def generate_tokens(filename, filter_func=no_filter):
     with open(filename, 'r', encoding='latin-1') as f:
         file_content = f.readlines()
     vocab_list = [[word for word in re.split('[^a-zA-Z]', line.lower().strip()) if filter_func(word)] for line in file_content]
@@ -18,4 +18,4 @@ def filter(filename, filter_func=no_filter):
     return flattened
 
 # Example usage
-# print(filter('./Project2-Test/test/test-ham-00002.txt', no_filter))
+# print(generate_tokens('./Project2-Test/test/test-ham-00002.txt', no_filter))
