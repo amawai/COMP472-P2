@@ -1,5 +1,6 @@
 import re
 import glob
+import math
 
 
 # CHANGE PATH TO YOUR OWN
@@ -63,10 +64,6 @@ def frequency(token_list):
     return dict
 
 
-def conditional(token_list):
-    pass
-
-
 # returns all unique keys of both classes
 def get_all_keys(ham_freq, spam_freq):
     return set().union(ham_freq, spam_freq)
@@ -75,6 +72,8 @@ def get_all_keys(ham_freq, spam_freq):
 def build_model(ham_freq, spam_freq):
     f = open('model.txt', 'w+')
     line_counter = 1
+    ham_token_total = len(get_ham_tokens(no_filter))
+    spam_token_total = len(get_spam_tokens(no_filter))
 
     # if word doesn't exist in one of the dicts, set value to 0
     all_keys = get_all_keys(ham_freq, spam_freq)
@@ -85,7 +84,7 @@ def build_model(ham_freq, spam_freq):
             spam_freq[word] = 0
 
     for k, v in sorted(ham_freq.items()):
-        f.write(str(line_counter) + '  ' + k + '  ' + str(v) + '  ' + 'cond_prob_1' + '  ' + str(spam_freq[k]) + '  ' + 'cond_prob_2' + '\n')
+        f.write(str(line_counter) + '  ' + k + '  ' + str(v) + '  ' + str(math.log10((v + 0.5) / (ham_token_total + (0.5 * len(ham_freq.items()))))) + '  ' + str(spam_freq[k]) + '  ' + str(math.log10((spam_freq[k] + 0.5) / (spam_token_total + (0.5 * len(spam_freq.items()))))) + '\n')
         line_counter += 1
     f.close()
 
