@@ -1,6 +1,6 @@
 import os
 import re
-from math import log
+from math import log10
 import numpy as np
 from tokenizer import generate_tokens, no_filter
 from constants import *
@@ -50,21 +50,25 @@ class Classifier:
         return re.search(r'[test | train]-\s*(\S+)-', filename).group(1)
 
     def score_spam(self, tokens):
-        return log(self.prob_spam) + sum([log(self.get_spam_prob(token)) for token in tokens])
+        return log10(self.prob_spam) + sum([self.get_spam_prob(token) for token in tokens])
 
     def score_ham(self, tokens):
-        return log(self.prob_ham) + sum([log(self.get_ham_prob(token)) for token in tokens])
+        return log10(self.prob_ham) + sum([self.get_ham_prob(token) for token in tokens])
 
     def get_spam_prob(self, word):
-        return self.model[self.word_index[word]][S_SPAM_PROB]
+        if word in self.word_index:
+            return log10(self.model[self.word_index[word]][S_SPAM_PROB])
+        return 0
 
     def get_ham_prob(self, word):
-        return self.model[self.word_index[word]][S_HAM_PROB]
+        if word in self.word_index:
+            return log10(self.model[self.word_index[word]][S_HAM_PROB])
+        return 0
 
     def compile_output_line(self, line_counter, test_file, test_class, ham_score, spam_score, correct_class):
         right_or_wrong = 'right' if test_class == correct_class else 'wrong'
         return '  '.join([str(line_counter), test_file, test_class, str(ham_score), str(spam_score), correct_class, right_or_wrong])
 
 # Example usage
-# classifier = Classifier('./Project2-Train/train', './mock_model.txt')
+# classifier = Classifier('./Project2-Train/train', './model.txt')
 # classifier.classify('./Project2-Test/test', no_filter)
