@@ -5,22 +5,23 @@ import numpy as np
 from tokenizer import generate_tokens, no_filter
 from constants import *
 
+
 class Classifier:
     def __init__(self, training_dir, model_file):
-        self.data_type = np.dtype([(INDEX, int), (WORD, 'U10'), (HAM_PROB, np.float64), (S_HAM_PROB, np.float64),\
-            (SPAM_PROB, np.float64), (S_SPAM_PROB, np.float64)])
+        self.data_type = np.dtype([(INDEX, int), (WORD, 'U10'), (HAM_PROB, np.float64), (S_HAM_PROB, np.float64),
+                                  (SPAM_PROB, np.float64), (S_SPAM_PROB, np.float64)])
         self.model, self.word_index = self.process_model(model_file)
         self.prob_spam, self.prob_ham = self.compute_probs(training_dir)
 
     def process_model(self, model_file):
         data = np.genfromtxt(model_file, dtype=self.data_type)
         # Dictionary mapping a word to its corresponding index in the model
-        word_index_dict = dict([(v[WORD], i) for i,v in enumerate(data)])
+        word_index_dict = dict([(v[WORD], i) for i, v in enumerate(data)])
         return data, word_index_dict
 
     def compute_probs(self, training_dir):
         spam_count = 0
-        ham_count =  0
+        ham_count = 0
         for file in os.listdir(training_dir):
             label = self.get_label_from_file(file)
             if label == SPAM:

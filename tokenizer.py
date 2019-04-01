@@ -1,21 +1,26 @@
 import re
 import glob
 
+
 # CHANGE PATH TO YOUR OWN
-path_ham = "C:/Users/Roger/Desktop/Github/COMP472-P2/train_ham/*.txt"
-path_spam = "C:/Users/Roger/Desktop/Github/COMP472-P2/train_spam/*.txt"
+path_ham = "./train_ham/*.txt"
+path_spam = "./train_spam/*.txt"
 
 ham_files = glob.glob(path_ham)
 spam_files = glob.glob(path_spam)
 
+
 def no_filter(word):
     return word != ''
+
 
 def stop_word_filter(word):
     pass
 
+
 def word_len_filter(word):
     pass
+
 
 # Tokenizes file, outputs array of valid words based on passed-in filter
 def generate_tokens(filename, filter_func=no_filter):
@@ -24,6 +29,7 @@ def generate_tokens(filename, filter_func=no_filter):
     vocab_list = [[word for word in re.split('[^a-zA-Z]', line.lower().strip()) if filter_func(word)] for line in file_content]
     flattened = [token for sublist in vocab_list for token in sublist]
     return flattened
+
 
 def get_ham_tokens(filter_func=no_filter):
     ham_list = []
@@ -35,6 +41,7 @@ def get_ham_tokens(filter_func=no_filter):
         ham_list.extend(flattened)
     return ham_list
 
+
 def get_spam_tokens(filter_func=no_filter):
     spam_list = []
     for spam in spam_files:
@@ -45,6 +52,7 @@ def get_spam_tokens(filter_func=no_filter):
         spam_list.extend(flattened)
     return spam_list
 
+
 def frequency(token_list):
     dict = {}
     for word in token_list:
@@ -54,9 +62,15 @@ def frequency(token_list):
             dict[word] = 1
     return dict
 
+
+def conditional(token_list):
+    pass
+
+
 # returns all unique keys of both classes
 def get_all_keys(ham_freq, spam_freq):
     return set().union(ham_freq, spam_freq)
+
 
 def build_model(ham_freq, spam_freq):
     f = open('model.txt', 'w+')
@@ -71,8 +85,7 @@ def build_model(ham_freq, spam_freq):
             spam_freq[word] = 0
 
     for k, v in sorted(ham_freq.items()):
-        f.write(str(line_counter) + '  ' + k + '  ' + str(v) + '  ' + 'cond_prob_1'\
-             + '  ' + str(spam_freq[k]) + '  ' + 'cond_prob_2' + '\n')
+        f.write(str(line_counter) + '  ' + k + '  ' + str(v) + '  ' + 'cond_prob_1' + '  ' + str(spam_freq[k]) + '  ' + 'cond_prob_2' + '\n')
         line_counter += 1
     f.close()
 
