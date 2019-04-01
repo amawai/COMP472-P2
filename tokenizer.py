@@ -17,5 +17,26 @@ def generate_tokens(filename, filter_func=no_filter):
     flattened = [token for sublist in vocab_list for token in sublist]
     return flattened
 
+def frequency(token_list):
+    dict = {}
+    for word in token_list:
+        if word in dict:
+            dict[word] += 1
+        else:
+            dict[word] = 1
+    return dict
+
+def build_model(freq):
+    f = open('model.txt', 'w+')
+    line_counter = 1
+    for k, v in sorted(freq.items()):
+        f.write(str(line_counter) + '  ' + k + '  ' + str(v) + '\n')
+        line_counter += 1
+    f.close()
+
+
 # Example usage
-# print(generate_tokens('./Project2-Test/test/test-ham-00002.txt', no_filter))
+tokens = generate_tokens('./train-ham-00002.txt', no_filter)
+
+freq = (frequency(tokens))
+build_model(freq)
