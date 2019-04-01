@@ -1,6 +1,5 @@
 import re
 import glob
-import math
 
 
 path_ham = "./train_ham/*.txt"
@@ -34,10 +33,7 @@ def generate_tokens(filename, filter_func=no_filter):
 def get_ham_tokens(filter_func=no_filter):
     ham_list = []
     for ham in ham_files:
-        with open(ham, 'r', encoding='latin-1') as f:
-            file_content = f.readlines()
-        vocab_list = [[word for word in re.split('[^a-zA-Z]', line.lower().strip()) if filter_func(word)] for line in file_content]
-        flattened = [token for sublist in vocab_list for token in sublist]
+        flattened = generate_tokens(ham, no_filter)
         ham_list.extend(flattened)
     return ham_list
 
@@ -45,10 +41,7 @@ def get_ham_tokens(filter_func=no_filter):
 def get_spam_tokens(filter_func=no_filter):
     spam_list = []
     for spam in spam_files:
-        with open(spam, 'r', encoding='latin-1') as f:
-            file_content = f.readlines()
-        vocab_list = [[word for word in re.split('[^a-zA-Z]', line.lower().strip()) if filter_func(word)] for line in file_content]
-        flattened = [token for sublist in vocab_list for token in sublist]
+        flattened = generate_tokens(spam, no_filter)
         spam_list.extend(flattened)
     return spam_list
 
@@ -64,10 +57,10 @@ def frequency(token_list):
 
 
 def calculate_conditional(token_freq, token_total, vocab_size):
-    return math.log10((token_freq + 0.5) / (token_total + (0.5 * vocab_size)))
+    return (token_freq + 0.5) / (token_total + (0.5 * vocab_size))
 
 
-# returns all unique keys of both classes
+# Returns all unique keys of both classes
 def get_all_keys(ham_freq, spam_freq):
     return set().union(ham_freq, spam_freq)
 
@@ -76,7 +69,7 @@ def build_model(ham_freq, spam_freq):
     f = open('model.txt', 'w+')
     line_counter = 1
 
-    # if word doesn't exist in one of the dicts, set value to 0
+    # If word doesn't exist in one of the dicts, set value to 0
     all_keys = get_all_keys(ham_freq, spam_freq)
     for word in all_keys:
         if word not in ham_freq:
@@ -84,7 +77,7 @@ def build_model(ham_freq, spam_freq):
         if word not in spam_freq:
             spam_freq[word] = 0
 
-    # for cond. prob calculations
+    # For cond. prob calculations
     ham_token_total = len(get_ham_tokens(no_filter))
     spam_token_total = len(get_spam_tokens(no_filter))
     ham_vocab_size = len(ham_freq.items())
@@ -96,7 +89,7 @@ def build_model(ham_freq, spam_freq):
     f.close()
 
 
-# Example usage
+# Example usage for model building
 ham_tokens = get_ham_tokens(no_filter)
 spam_tokens = get_spam_tokens(no_filter)
 

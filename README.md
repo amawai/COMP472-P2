@@ -8,7 +8,7 @@ and Matplotlib.**
 
 ## Developers
 
-| Name          | Github Handle | 
+| Name          | GitHub Handle | 
 | ------------------ | ------------- |
 | Amanda Wai |  _amawai_ |
 | Chen Jie Lu | _SunXP_ |
