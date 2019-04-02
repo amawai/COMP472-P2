@@ -14,7 +14,7 @@ def no_filter(word):
 
 
 def stop_word_filter(word):
-    pass
+    return word not in stop_words
 
 
 def word_len_filter(word):
@@ -33,7 +33,7 @@ def generate_tokens(filename, filter_func=no_filter):
 def get_ham_tokens(filter_func=no_filter):
     ham_list = []
     for ham in ham_files:
-        flattened = generate_tokens(ham, no_filter)
+        flattened = generate_tokens(ham, filter_func)
         ham_list.extend(flattened)
     return ham_list
 
@@ -41,9 +41,15 @@ def get_ham_tokens(filter_func=no_filter):
 def get_spam_tokens(filter_func=no_filter):
     spam_list = []
     for spam in spam_files:
-        flattened = generate_tokens(spam, no_filter)
+        flattened = generate_tokens(spam, filter_func)
         spam_list.extend(flattened)
     return spam_list
+
+
+def get_stop_words():
+    with open('./English-Stop-Words.txt', 'r') as f:
+        file_content = f.readlines()
+    return list(map(lambda x: x.lower().strip(), file_content))
 
 
 def frequency(token_list):
@@ -66,7 +72,8 @@ def get_all_keys(ham_freq, spam_freq):
 
 
 def build_model(ham_freq, spam_freq):
-    f = open('model.txt', 'w+')
+    f = open('stopword-model.txt', 'w+')
+    # f = open('model.txt', 'w+')
     line_counter = 1
 
     # If word doesn't exist in one of the dicts, set value to 0
@@ -90,10 +97,14 @@ def build_model(ham_freq, spam_freq):
 
 
 # Example usage for model building
-ham_tokens = get_ham_tokens(no_filter)
-spam_tokens = get_spam_tokens(no_filter)
+
+stop_words = get_stop_words()
+
+ham_tokens = get_ham_tokens(stop_word_filter)
+spam_tokens = get_spam_tokens(stop_word_filter)
 
 ham_freq = frequency(ham_tokens)
 spam_freq = frequency(spam_tokens)
 
 build_model(ham_freq, spam_freq)
+
