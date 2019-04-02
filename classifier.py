@@ -2,7 +2,7 @@ import os
 import re
 from math import log10
 import numpy as np
-from tokenizer import generate_tokens, no_filter
+from tokenizer import generate_tokens, no_filter, stop_word_filter
 from constants import *
 
 
@@ -31,7 +31,7 @@ class Classifier:
         total = spam_count + ham_count
         return spam_count / total, ham_count / total
 
-    def classify(self, test_path, filter_func, output_file="baseline-result.txt"):
+    def classify(self, test_path, filter_func, output_file):
         line_counter = 1
         results = []
         for f in os.listdir(test_path):
@@ -70,5 +70,6 @@ class Classifier:
         return '  '.join([str(line_counter), test_file, test_class, str(ham_score), str(spam_score), correct_class, right_or_wrong])
 
 # Example usage
-# classifier = Classifier('./Project2-Train/train', './model.txt')
-# classifier.classify('./Project2-Test/test', no_filter)
+
+classifier = Classifier('./train', 'stopword-model.txt')
+classifier.classify('./test', stop_word_filter, 'stopword-result.txt')
