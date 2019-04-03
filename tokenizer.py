@@ -18,7 +18,8 @@ def stop_word_filter(word):
 
 
 def word_len_filter(word):
-    pass
+    if len(word) > 2 and len(word) < 9:
+        return word
 
 
 # Tokenizes file, outputs array of valid words based on passed-in filter
@@ -85,8 +86,8 @@ def build_model(ham_freq, spam_freq):
             spam_freq[word] = 0
 
     # For cond. prob calculations
-    ham_token_total = len(get_ham_tokens(no_filter))
-    spam_token_total = len(get_spam_tokens(no_filter))
+    ham_token_total = len(get_ham_tokens(stop_word_filter))
+    spam_token_total = len(get_spam_tokens(stop_word_filter))
     ham_vocab_size = len(ham_freq.items())
     spam_vocab_size = len(spam_freq.items())
 
