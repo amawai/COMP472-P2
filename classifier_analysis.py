@@ -10,6 +10,8 @@ def analyze_output(filename):
     fp = 0
     fn = 0
     tn = 0
+    acc_num = 0
+    acc_denom = 0
     # in this case, positive means that a result has tested positive for being SPAM
     for result in data:
         if result[PREDICTED_CLASS] == SPAM:
@@ -26,7 +28,23 @@ def analyze_output(filename):
             elif result[CORRECT_CLASS] == 'wrong':
                 # Labeled as ham but actually spam
                 fn += 1
+
+
+    accuracy = (tp + tn) / (tp + fp + tn + fn)
+
+    spam_precision = tp / (tp + fp)
+    spam_recall = tp / (tp + fn)
+    
+    ham_precision = tn / (tn + fn)
+    ham_recall = tn / (tn + fp)
+
+    ham_f1_measure = (2 * ham_precision * ham_recall) / (ham_precision + ham_recall)
+    spam_f1_measure = (2 * spam_precision * spam_recall) / (spam_precision + spam_recall)
+
     print('TP: {} \nFP: {} \nFN: {} \nTN {} '.format(tp, fp, fn, tn))
+    print('Ham Precision: {} \nHam Recall: {} \nHam F1: {} \nAccuracy {} '.format(ham_precision, ham_recall, ham_f1_measure, accuracy))
+    print('Spam Precision: {} \nSpam Recall: {} \nSpam F1: {} \nAccuracy {} '.format(spam_precision, spam_recall, spam_f1_measure, accuracy))
+
     return tp, fp, fn, tn
 
 def generate_confusion_matrix(file_to_analyze, title='Confusion Matrix'):
@@ -58,6 +76,10 @@ def generate_confusion_matrix(file_to_analyze, title='Confusion Matrix'):
     fig.tight_layout()
     plt.show()
 
+
+# analyze_output('./baseline-result.txt')
+analyze_output('./stopword-result.txt')
+# analyze_output('./worldlength-result.txt')
 # generate_confusion_matrix('./baseline-result.txt', 'Confusion Matrix')
 # generate_confusion_matrix('./stopword-result.txt', 'Stop-Word Confusion Matrix')
 # generate_confusion_matrix('./wordlength-result.txt', 'Word Length Confusion Matrix')
