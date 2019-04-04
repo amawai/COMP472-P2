@@ -108,4 +108,3 @@ ham_freq = frequency(ham_tokens)
 spam_freq = frequency(spam_tokens)
 
 build_model(ham_freq, spam_freq)
-

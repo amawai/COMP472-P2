@@ -2,14 +2,17 @@ import matplotlib.pyplot as plt
 import numpy as np
 from constants import *
 
+
 def analyze_output(filename):
-    dt = np.dtype([(LINE_COUNTER, int), (FILE_NAME, 'U32'), (PREDICTED_CLASS, 'U10'),\
-        (HAM_SCORE, np.float64), (SPAM_SCORE, np.float64), (ACTUAL_CLASS, 'U10'), (CORRECT_CLASS, 'U10')])
+    dt = np.dtype([(LINE_COUNTER, int), (FILE_NAME, 'U32'), (PREDICTED_CLASS, 'U10'),
+                  (HAM_SCORE, np.float64), (SPAM_SCORE, np.float64), (ACTUAL_CLASS, 'U10'), (CORRECT_CLASS, 'U10')])
     data = np.genfromtxt(filename, dtype=dt)
-    tp = 0 
+    tp = 0
     fp = 0
     fn = 0
     tn = 0
+    acc_num = 0
+    acc_denom = 0
     # in this case, positive means that a result has tested positive for being SPAM
     for result in data:
         if result[PREDICTED_CLASS] == SPAM:
@@ -26,8 +29,22 @@ def analyze_output(filename):
             elif result[CORRECT_CLASS] == 'wrong':
                 # Labeled as ham but actually spam
                 fn += 1
+
+    # Calculations for analysis of experiment results
+    accuracy = (tp + tn) / (tp + fp + tn + fn)
+    spam_precision = tp / (tp + fp)
+    spam_recall = tp / (tp + fn)
+    ham_precision = tn / (tn + fn)
+    ham_recall = tn / (tn + fp)
+    ham_f1_measure = (2 * ham_precision * ham_recall) / (ham_precision + ham_recall)
+    spam_f1_measure = (2 * spam_precision * spam_recall) / (spam_precision + spam_recall)
+
     print('TP: {} \nFP: {} \nFN: {} \nTN {} '.format(tp, fp, fn, tn))
+    # print('Accuracy: {} \nHam Precision: {} \nHam Recall: {} \nHam F1: {} '.format(ham_precision, ham_recall, ham_f1_measure, accuracy))
+    # print('Spam Precision: {} \nSpam Recall: {} \nSpam F1: {} '.format(spam_precision, spam_recall, spam_f1_measure))
+
     return tp, fp, fn, tn
+
 
 def generate_confusion_matrix(file_to_analyze, title='Confusion Matrix'):
     tp, fp, fn, tn = analyze_output(file_to_analyze)
@@ -57,6 +74,11 @@ def generate_confusion_matrix(file_to_analyze, title='Confusion Matrix'):
                     color="white" if data[i, j] > threshold else "black")
     fig.tight_layout()
     plt.show()
+
+
+# analyze_output('./baseline-result.txt')
+# analyze_output('./stopword-result.txt')
+# analyze_output('./wordlength-result.txt')
 
 # generate_confusion_matrix('./baseline-result.txt', 'Confusion Matrix')
 # generate_confusion_matrix('./stopword-result.txt', 'Stop-Word Confusion Matrix')
