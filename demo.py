@@ -1,24 +1,49 @@
+import os
 from classifier import Classifier
 from tokenizer import build_model_wrapper, no_filter,\
     stop_word_filter, word_len_filter, get_stop_words
 
-TRAINING_DIRECTORY = './train'
-TESTING_DIRECTORY = './test'
-STOP_WORDS = './English-Stop-Words.txt'
+STOP_WORDS_FILE = './English-Stop-Words.txt'
+stop_words = get_stop_words(STOP_WORDS_FILE)
 
-stop_words = get_stop_words(STOP_WORDS)
+def choose_experiment(experiments):
+    experiment = ""
+    while experiment not in experiments:
+        experiment = input(
+            "Input one of the following experiments, [%s] > " % ", ".join(experiments))
+    return experiment
 
-# Building the models
-build_model_wrapper(TRAINING_DIRECTORY, './models/model.txt', no_filter)
-build_model_wrapper(TRAINING_DIRECTORY, './models/stopword-model.txt', stop_word_filter, stop_words)
-build_model_wrapper(TRAINING_DIRECTORY, './models/wordlength-model.txt', word_len_filter)
+def validate_directory(directory):
+    return os.path.isdir(directory)
 
-# # Running the classifiers on models
-vanilla_classifier = Classifier(TRAINING_DIRECTORY, './models/model.txt')
-vanilla_classifier.classify(TESTING_DIRECTORY, './results/baseline-result.txt', no_filter)
+def input_directory(directory_type):
+    input_dir = input('Input {} set location > '.format(directory_type))
+    while not validate_directory(input_dir):
+        input_dir = input('Please input a valid, existing directory > ')
+    return input_dir
 
-stop_word_classifier = Classifier(TRAINING_DIRECTORY, './models/stopword-model.txt')
-stop_word_classifier.classify(TESTING_DIRECTORY, './results/stopword-result.txt', stop_word_filter, stop_words)
+experiment = choose_experiment(["1", "2", "3"])
+training_dir = input_directory('training')
+test_dir = input_directory('test')
 
-word_len_classifier = Classifier(TRAINING_DIRECTORY, './models/wordlength-model.txt')
-word_len_classifier.classify(TESTING_DIRECTORY, './results/wordlength-result.txt', word_len_filter)
+if experiment == '1':
+    model_file = 'demo-model-base.txt'
+    result_file = 'demo-result-base.txt'
+    filter_func = no_filter
+    word_filter = None
+elif experiment == '2':
+    model_file = 'demo-model-exp2.txt'
+    result_file = 'demo-result-exp2.txt'
+    filter_func = stop_word_filter
+    word_filter = stop_words
+elif experiment == '3':
+    model_file = 'demo-model-exp3.txt'
+    result_file = 'demo-result-exp3.txt'
+    filter_func = word_len_filter
+    word_filter = None
+
+print('Building model...')
+build_model_wrapper(training_dir, model_file, filter_func, word_filter)
+print('Model complete! Classifying...')
+Classifier(training_dir, model_file).classify(test_dir, result_file, filter_func, word_filter)
+print('Classification complete. Check out {} and {}.'.format(model_file, result_file))
