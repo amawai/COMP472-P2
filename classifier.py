@@ -30,11 +30,11 @@ class Classifier:
         total = spam_count + ham_count
         return spam_count / total, ham_count / total
 
-    def classify(self, test_path, filter_func, output_file):
+    def classify(self, test_path, output_file, filter_func, filter_words=None):
         line_counter = 1
         results = []
         for f in sorted(os.listdir(test_path)):
-            tokens = generate_tokens(os.path.join(test_path, f), filter_func)
+            tokens = generate_tokens(os.path.join(test_path, f), filter_func, filter_words)
             spam_score = self.score_spam(tokens)
             ham_score = self.score_ham(tokens)
             test_class = SPAM if spam_score > ham_score else HAM
@@ -65,6 +65,3 @@ class Classifier:
         right_or_wrong = 'right' if test_class == correct_class else 'wrong'
         return '  '.join([str(line_counter), test_file, test_class, str(ham_score), str(spam_score), correct_class, right_or_wrong])
 
-# Example usage
-# classifier = Classifier('./train', 'stopword-model.txt')
-# classifier.classify('./test', stop_word_filter, 'stopword-result.txt')
