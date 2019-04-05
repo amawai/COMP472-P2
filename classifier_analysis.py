@@ -40,7 +40,7 @@ def analyze_output(filename):
     spam_f1_measure = (2 * spam_precision * spam_recall) / (spam_precision + spam_recall)
 
     print('TP: {} \nFP: {} \nFN: {} \nTN {} '.format(tp, fp, fn, tn))
-    print('Accuracy: {} \nHam Precision: {} \nHam Recall: {} \nHam F1: {} '.format(ham_precision, ham_recall, ham_f1_measure, accuracy))
+    print('Accuracy: {} \nHam Precision: {} \nHam Recall: {} \nHam F1: {} '.format(accuracy, ham_precision, ham_recall, ham_f1_measure))
     print('Spam Precision: {} \nSpam Recall: {} \nSpam F1: {} '.format(spam_precision, spam_recall, spam_f1_measure))
 
     return tp, fp, fn, tn
