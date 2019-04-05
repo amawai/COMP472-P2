@@ -2,37 +2,35 @@ import re
 import os
 from constants import *
 
-TRAINING_DIRECTORY = './train'
-STOP_WORDS = './English-Stop-Words.txt'
-
 def no_filter(word):
     return word != ''
 
-
-def stop_word_filter(word):
+def stop_word_filter(word, stop_words):
     return word not in stop_words
-
 
 def word_len_filter(word):
     return len(word) > 2 and len(word) < 9
 
 # Tokenizes file, outputs array of valid words based on passed-in filter
-def generate_tokens(filename, filter_func):
+def generate_tokens(filename, filter_func, filter_words=None):
     with open(filename, 'r', encoding='latin-1') as f:
         file_content = f.readlines()
-    vocab_list = [[word for word in re.split('[^a-zA-Z]', line.lower().strip()) if filter_func(word)] for line in file_content]
+    if filter_words:
+        vocab_list = [[word for word in re.split('[^a-zA-Z]', line.lower().strip()) if filter_func(word, filter_words)] for line in file_content]
+    else:
+        vocab_list = [[word for word in re.split('[^a-zA-Z]', line.lower().strip()) if filter_func(word)] for line in file_content]
     flattened = [token for sublist in vocab_list for token in sublist]
     return flattened
 
 def get_label_from_file(filename):
     return re.search(r'[test | train]-\s*(\S+)-', filename).group(1)
 
-def get_tokens(training_dir, ham_or_spam, filter_func):
+def get_tokens(training_dir, ham_or_spam, filter_func, filter_words=None):
     token_list = []
     for f in os.listdir(training_dir):
         file_path = os.path.join(training_dir, f)
         if get_label_from_file(file_path) == ham_or_spam:
-            token_list += generate_tokens(file_path, filter_func)
+            token_list += generate_tokens(file_path, filter_func, filter_words)
     return token_list
 
 def get_stop_words(filename):
@@ -85,12 +83,8 @@ def build_model(ham_tokens, spam_tokens, filename):
         line_counter += 1
     f.close()
 
-def build_model_wrapper(training_dir, output_file, filter_func):
-    ham_tokens = get_tokens(training_dir, HAM, filter_func)
-    spam_tokens = get_tokens(training_dir, SPAM, filter_func)
+def build_model_wrapper(training_dir, output_file, filter_func, filter_words=None):
+    ham_tokens = get_tokens(training_dir, HAM, filter_func, filter_words)
+    spam_tokens = get_tokens(training_dir, SPAM, filter_func, filter_words)
     build_model(ham_tokens, spam_tokens, output_file)
 
-stop_words = get_stop_words(STOP_WORDS)
-
-# Example usage:
-# build_model_wrapper(TRAINING_DIRECTORY, 'model.txt', no_filter)
