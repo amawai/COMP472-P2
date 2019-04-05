@@ -40,8 +40,8 @@ def analyze_output(filename):
     spam_f1_measure = (2 * spam_precision * spam_recall) / (spam_precision + spam_recall)
 
     print('TP: {} \nFP: {} \nFN: {} \nTN {} '.format(tp, fp, fn, tn))
-    # print('Accuracy: {} \nHam Precision: {} \nHam Recall: {} \nHam F1: {} '.format(ham_precision, ham_recall, ham_f1_measure, accuracy))
-    # print('Spam Precision: {} \nSpam Recall: {} \nSpam F1: {} '.format(spam_precision, spam_recall, spam_f1_measure))
+    print('Accuracy: {} \nHam Precision: {} \nHam Recall: {} \nHam F1: {} '.format(ham_precision, ham_recall, ham_f1_measure, accuracy))
+    print('Spam Precision: {} \nSpam Recall: {} \nSpam F1: {} '.format(spam_precision, spam_recall, spam_f1_measure))
 
     return tp, fp, fn, tn
 
@@ -54,7 +54,7 @@ def generate_confusion_matrix(file_to_analyze, title='Confusion Matrix'):
     rows = ['Actual: SPAM', 'Actual: HAM']
 
     fig, ax = plt.subplots()
-    im = ax.imshow(data, interpolation='nearest', cmap=plt.cm.Greens)
+    im = ax.imshow(data, interpolation='nearest', cmap=plt.cm.Blues)
     ax.figure.colorbar(im, ax=ax)
     ax.set(xticks=np.arange(data.shape[1]),
            yticks=np.arange(data.shape[0]),
@@ -75,11 +75,11 @@ def generate_confusion_matrix(file_to_analyze, title='Confusion Matrix'):
     fig.tight_layout()
     plt.show()
 
-
-# analyze_output('./baseline-result.txt')
-# analyze_output('./stopword-result.txt')
-# analyze_output('./wordlength-result.txt')
-
-# generate_confusion_matrix('./baseline-result.txt', 'Confusion Matrix')
-# generate_confusion_matrix('./stopword-result.txt', 'Stop-Word Confusion Matrix')
-# generate_confusion_matrix('./wordlength-result.txt', 'Word Length Confusion Matrix')
+print('Baseline results: ')
+generate_confusion_matrix('./results/baseline-result.txt', 'Confusion Matrix')
+print('\n')
+print('Stopword results: ')
+generate_confusion_matrix('./results/stopword-result.txt', 'Stop-Word Confusion Matrix')
+print('\n')
+print('Wordlength results: ')
+generate_confusion_matrix('./results/wordlength-result.txt', 'Word Length Confusion Matrix')

@@ -22,6 +22,6 @@ The demo file, `demo.py` builds all models (experiments #1-#3) and runs all expe
 
 
 ### How to evaluate the classifier
-Uncomment any of the commented out function calls in the last lines of the file, depending on which experiment you are trying to carry out and are interested in evaluating, and run:
+By default, all experiments will be analyzed, so comment out any experiment you are not interested in evaluating, and run:
 
 `python3 classifier_analysis.py`
