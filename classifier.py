@@ -1,8 +1,7 @@
 import os
-import re
 from math import log10
 import numpy as np
-from tokenizer import generate_tokens, no_filter, stop_word_filter
+from tokenizer import generate_tokens, get_label_from_file
 from constants import *
 
 
@@ -23,7 +22,7 @@ class Classifier:
         spam_count = 0
         ham_count = 0
         for file in os.listdir(training_dir):
-            label = self.get_label_from_file(file)
+            label = get_label_from_file(file)
             if label == SPAM:
                 spam_count += 1
             elif label == HAM:
@@ -39,15 +38,12 @@ class Classifier:
             spam_score = self.score_spam(tokens)
             ham_score = self.score_ham(tokens)
             test_class = SPAM if spam_score > ham_score else HAM
-            correct_class = self.get_label_from_file(f)
+            correct_class = get_label_from_file(f)
             results.append(self.compile_output_line(line_counter, f, test_class, ham_score, spam_score, correct_class))
             line_counter += 1
         with open(output_file, 'w') as f_to_write:
             f_to_write.write('\n'.join(results))
         return True
-
-    def get_label_from_file(self, filename):
-        return re.search(r'[test | train]-\s*(\S+)-', filename).group(1)
 
     def score_spam(self, tokens):
         return log10(self.prob_spam) + sum([self.get_spam_prob(token) for token in tokens])
@@ -69,7 +65,6 @@ class Classifier:
         right_or_wrong = 'right' if test_class == correct_class else 'wrong'
         return '  '.join([str(line_counter), test_file, test_class, str(ham_score), str(spam_score), correct_class, right_or_wrong])
 
-
 # Example usage
-classifier = Classifier('./train', 'stopword-model.txt')
-classifier.classify('./test', stop_word_filter, 'stopword-result.txt')
+# classifier = Classifier('./train', 'stopword-model.txt')
+# classifier.classify('./test', stop_word_filter, 'stopword-result.txt')
