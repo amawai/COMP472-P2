@@ -33,7 +33,7 @@ class Classifier:
     def classify(self, test_path, filter_func, output_file):
         line_counter = 1
         results = []
-        for f in os.listdir(test_path):
+        for f in sorted(os.listdir(test_path)):
             tokens = generate_tokens(os.path.join(test_path, f), filter_func)
             spam_score = self.score_spam(tokens)
             ham_score = self.score_ham(tokens)
