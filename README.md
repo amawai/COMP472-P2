@@ -1,5 +1,5 @@
 # C-O-M-P-4-7-2: Naive Bayes Classification 
-ダブルカード C ○ M P 4 7 2 ●
+ナイーブベイズ C ○ M P 4 7 2 ●
 
 This is written in Python 3 and makes use of the following libraries **NumPy, math, re, sys
 and Matplotlib.**
